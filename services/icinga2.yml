@@ -1,0 +1,40 @@
+---
+services:
+  icinga2:
+    image: icinga/icinga2:${ICINGA_TAG:-latest} # E.g.: 2.16, 2.16.4
+    hostname: ${ICINGA_HOSTNAME:-icinga2} # Set this before the first start!
+    environment:
+      ICINGADB_REDIS_PASSWORD: ${ICINGADB_REDIS_PASSWORD:-icingadb-redis}
+      ICINGA_ADMIN_PASSWORD: ${ICINGA_ADMIN_PASSWORD:-icinga}
+      ICINGA_DISABLE_CONFD: 1
+      ICINGA_MASTER: 1
+    cap_add:
+      - NET_RAW # Podman drops it by default, but ping needs it
+    ports:
+      - 127.0.0.1:5665:5665
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'curl -sfk --user "root:$$ICINGA_ADMIN_PASSWORD" https://localhost:5665/v1/status >/dev/null'
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - icinga2:/data
+      - ${PWD}/scripts:/scripts:ro,z
+    command:
+      - bash
+      - -exo
+      - pipefail
+      - -c
+      - |
+        if [[ ! -L /etc/icinga2/conf.d/api-users.conf ]]; then
+          # Don't mount volumes below volumes, but also don't write api-users.conf on every start
+          rm -f /etc/icinga2/conf.d/api-users.conf
+          ln -vs /scripts/icinga2-apiuser.conf /etc/icinga2/conf.d/api-users.conf
+        fi
+
+        exec icinga2 daemon -c /etc/icinga2/icinga2.conf -c /scripts/icinga2-features.conf
+
+volumes:
+  icinga2:

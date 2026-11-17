@@ -1,0 +1,13 @@
+---
+services:
+  icingadb-redis:
+    image: redis:${REDIS_ICINGADB_TAG:-alpine} # E.g.: 8, 8.2-alpine
+    command:
+      - redis-server
+      - --requirepass
+      - ${ICINGADB_REDIS_PASSWORD:-icingadb-redis}
+    volumes:
+      - icingadb-redis:/data
+
+volumes:
+  icingadb-redis:

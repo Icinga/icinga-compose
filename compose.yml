@@ -1,0 +1,13 @@
+---
+# Distribute distinct services across files to ease getting started and maintenance
+include:
+  - services/director.yml
+  - services/graphite.yml
+  - services/icinga2.yml
+  - services/icingadb.yml
+  - services/icingaweb.yml
+  - services/mysql.yml
+  - services/pingdb.yml
+  - services/pgsql.yml
+  - services/icingadb-redis.yml
+  - services/x509.yml

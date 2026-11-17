@@ -1,0 +1,19 @@
+---
+services:
+  pgsql:
+    profiles:
+      - pgsql
+    image: postgres:${POSTGRES_TAG:-18-alpine} # E.g.: alpine, 18.6-alpine
+    environment:
+      PGDATA: /icinga-postgresql # Image default varies by version (since v18)
+      POSTGRES_PASSWORD: replaced-by-pgsql-init.sh # Required, but randomized
+      DIRECTOR_DATABASE_PASSWORD: ${DIRECTOR_DATABASE_PASSWORD:-director}
+      ICINGADB_DATABASE_PASSWORD: ${ICINGADB_DATABASE_PASSWORD:-icingadb}
+      ICINGAWEB_DATABASE_PASSWORD: ${ICINGAWEB_DATABASE_PASSWORD:-icingaweb}
+      X509_DATABASE_PASSWORD: ${X509_DATABASE_PASSWORD:-x509}
+    volumes:
+      - pgsql:/icinga-postgresql
+      - ${PWD}/scripts/pgsql-init.sh:/docker-entrypoint-initdb.d/databases.sh:ro,z
+
+volumes:
+  pgsql:

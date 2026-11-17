@@ -1,0 +1,207 @@
+{
+  "ImportSource": {
+    "tcp.csv hosts": {
+      "key_column": "host",
+      "modifiers": [
+        {
+          "priority": "1",
+          "property_name": "host",
+          "provider_class": "Icinga\\Module\\Director\\PropertyModifier\\PropertyModifierSkipDuplicates",
+          "settings": {}
+        }
+      ],
+      "provider_class": "Icinga\\Module\\Fileshipper\\ProvidedHook\\Director\\ImportSource",
+      "settings": {
+        "basedir": "/etc/fileshipper/example",
+        "csv_delimiter": ",",
+        "csv_enclosure": "\"",
+        "file_format": "csv",
+        "file_name": "tcp.csv"
+      },
+      "source_name": "tcp.csv hosts"
+    },
+    "tcp.csv ports": {
+      "key_column": "primary_key",
+      "modifiers": [
+        {
+          "priority": "1",
+          "property_name": "primary_key",
+          "provider_class": "Icinga\\Module\\Director\\PropertyModifier\\PropertyModifierCombine",
+          "settings": {
+            "pattern": "${host},${port}"
+          }
+        }
+      ],
+      "provider_class": "Icinga\\Module\\Fileshipper\\ProvidedHook\\Director\\ImportSource",
+      "settings": {
+        "basedir": "/etc/fileshipper/example",
+        "csv_delimiter": ",",
+        "csv_enclosure": "\"",
+        "file_format": "csv",
+        "file_name": "tcp.csv"
+      },
+      "source_name": "tcp.csv ports"
+    }
+  },
+  "SyncRule": {
+    "Example hosts": {
+      "object_type": "host",
+      "properties": [
+        {
+          "destination_field": "check_command",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "1",
+          "source": "tcp.csv hosts",
+          "source_expression": "hostalive"
+        },
+        {
+          "destination_field": "address",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "2",
+          "source": "tcp.csv hosts",
+          "source_expression": "${host}"
+        }
+      ],
+      "purge_existing": false,
+      "rule_name": "Example hosts",
+      "update_policy": "merge"
+    },
+    "Example TCP services": {
+      "object_type": "service",
+      "properties": [
+        {
+          "destination_field": "object_name",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "1",
+          "source": "tcp.csv ports",
+          "source_expression": "tcp:${port}"
+        },
+        {
+          "destination_field": "host",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "2",
+          "source": "tcp.csv ports",
+          "source_expression": "${host}"
+        },
+        {
+          "destination_field": "check_command",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "3",
+          "source": "tcp.csv ports",
+          "source_expression": "tcp"
+        },
+        {
+          "destination_field": "vars.tcp_port",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "4",
+          "source": "tcp.csv ports",
+          "source_expression": "${port}"
+        }
+      ],
+      "purge_existing": false,
+      "rule_name": "Example TCP services",
+      "update_policy": "merge"
+    },
+    "Example SSL services": {
+      "filter_expression": "port=5665",
+      "object_type": "service",
+      "properties": [
+        {
+          "destination_field": "object_name",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "1",
+          "source": "tcp.csv ports",
+          "source_expression": "ssl:${port}"
+        },
+        {
+          "destination_field": "host",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "2",
+          "source": "tcp.csv ports",
+          "source_expression": "${host}"
+        },
+        {
+          "destination_field": "check_command",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "3",
+          "source": "tcp.csv ports",
+          "source_expression": "ssl"
+        },
+        {
+          "destination_field": "vars.ssl_port",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "4",
+          "source": "tcp.csv ports",
+          "source_expression": "${port}"
+        }
+      ],
+      "purge_existing": false,
+      "rule_name": "Example SSL services",
+      "update_policy": "merge"
+    },
+    "Example HTTP services": {
+      "filter_expression": "port=80|port=8080",
+      "object_type": "service",
+      "properties": [
+        {
+          "destination_field": "object_name",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "1",
+          "source": "tcp.csv ports",
+          "source_expression": "http:${port}"
+        },
+        {
+          "destination_field": "host",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "2",
+          "source": "tcp.csv ports",
+          "source_expression": "${host}"
+        },
+        {
+          "destination_field": "check_command",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "3",
+          "source": "tcp.csv ports",
+          "source_expression": "http"
+        },
+        {
+          "destination_field": "vars.http_port",
+          "filter_expression": null,
+          "merge_policy": "merge",
+          "priority": "4",
+          "source": "tcp.csv ports",
+          "source_expression": "${port}"
+        }
+      ],
+      "purge_existing": false,
+      "rule_name": "Example HTTP services",
+      "update_policy": "merge"
+    }
+  },
+  "Basket": {
+    "Example": {
+      "basket_name": "Example",
+      "objects": {
+        "ImportSource": true,
+        "SyncRule": true,
+        "Basket": true
+      },
+      "owner_type": "user",
+      "owner_value": "icingaadmin",
+      "uuid": "653a434f-fe86-817a-4bea-4f5baa530445"
+    }
+  }
+}

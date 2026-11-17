@@ -1,0 +1,14 @@
+host,port
+graphite,80
+graphite,2003
+graphite,2004
+graphite,2023
+graphite,2024
+graphite,7002
+graphite,8080
+graphite,8126
+icinga2,5665
+icingaweb,8080
+mysql,3306
+pgsql,5432
+icingadb-redis,6379
