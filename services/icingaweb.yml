@@ -1,0 +1,68 @@
+---
+services:
+  icingaweb:
+    profiles:
+      - mysql
+      - pgsql
+    image: icinga/icingaweb2:${ICINGAWEB_TAG:-latest}
+    ports:
+      - 127.0.0.1:8080:8080
+    environment:
+      ICINGAWEB_SERIALIZER_COMPAT: 0
+      icingaweb_authentication_Database_backend: db
+      icingaweb_authentication_Database_resource: icingaweb
+      icingawebXconfigXglobalXconfig_resource: icingaweb
+      icingaweb_config_logging_log: php
+      icingaweb_enabledModules: businessprocess,cube,director,fileshipper,graphite,icingadb,x509,${ICINGAWEB_ENABLEDMODULES:-}
+      icingaweb_modules_director_config_db_resource: director
+      icingaweb_modules_fileshipper_imports_Example_basedir: /etc/fileshipper/example
+      icingaweb_modules_fileshipper_imports_Playground_basedir: /etc/fileshipper/playground
+      icingaweb_modules_graphite_config_graphite_url: http://graphite:80
+      icingaweb_modules_icingadb_commandtransports_icinga2_transport: api
+      icingaweb_modules_icingadb_commandtransports_icinga2_host: icinga2
+      icingaweb_modules_icingadb_commandtransports_icinga2_username: root
+      icingaweb_modules_icingadb_commandtransports_icinga2_password: ${ICINGA_ADMIN_PASSWORD:-icinga}
+      icingaweb_modules_icingadb_config_icingadb_resource: icingadb
+      icingaweb_modules_icingadb_redis_redis1_host: icingadb-redis
+      icingaweb_modules_icingadb_redis_redis1_port: 6379
+      icingaweb_modules_icingadb_redis_redis1_password: ${ICINGADB_REDIS_PASSWORD:-icingadb-redis}
+      icingaweb_modules_x509_config_backend_resource: x509
+      icingaweb_passwords_Database_icingaadmin: ${ICINGAWEB_ADMIN_PASSWORD:-icinga}
+      icingaweb_resources_director_type: db
+      icingaweb_resources_director_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_director_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_director_dbname: director
+      icingaweb_resources_director_username: director
+      icingaweb_resources_director_password: ${DIRECTOR_DATABASE_PASSWORD:-director}
+      icingaweb_resources_director_charset: utf8
+      icingaweb_resources_icingadb_type: db
+      icingaweb_resources_icingadb_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_icingadb_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_icingadb_dbname: icingadb
+      icingaweb_resources_icingadb_username: icingadb
+      icingaweb_resources_icingadb_password: ${ICINGADB_DATABASE_PASSWORD:-icingadb}
+      icingaweb_resources_icingadb_charset: utf8
+      icingaweb_resources_icingaweb_type: db
+      icingaweb_resources_icingaweb_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_icingaweb_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_icingaweb_dbname: icingaweb
+      icingaweb_resources_icingaweb_username: icingaweb
+      icingaweb_resources_icingaweb_password: ${ICINGAWEB_DATABASE_PASSWORD:-icingaweb}
+      icingaweb_resources_icingaweb_charset: utf8
+      icingaweb_resources_x509_type: db
+      icingaweb_resources_x509_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_dbname: x509
+      icingaweb_resources_x509_username: x509
+      icingaweb_resources_x509_password: ${X509_DATABASE_PASSWORD:-x509}
+      icingaweb_resources_x509_charset: utf8
+      icingaweb_roles_Administrators_users: icingaadmin
+      icingaweb_roles_Administrators_permissions: '*'
+    volumes:
+      - icingaweb:/data
+      - ${PWD}/fileshipper/example:/etc/fileshipper/example:z
+      - ${PWD}/fileshipper/playground:/etc/fileshipper/playground:z
+    restart: on-failure # Workaround for slow database startup
+
+volumes:
+  icingaweb:

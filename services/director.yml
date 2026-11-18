@@ -1,0 +1,49 @@
+---
+services:
+  director:
+    profiles:
+      - mysql
+      - pgsql
+    depends_on:
+      icinga2: # Kickstart
+        condition: service_healthy
+      pingdb:
+        condition: service_completed_successfully
+    image: icinga/icingaweb2:${ICINGAWEB_TAG:-latest}
+    environment:
+      ICINGAWEB_SERIALIZER_COMPAT: 0
+      icingaweb_enabledModules: director,fileshipper,x509,${ICINGAWEB_ENABLEDMODULES:-}
+      icingaweb_modules_director_config_db_resource: director
+      icingaweb_modules_director_kickstart_config_endpoint: ${ICINGA_HOSTNAME:-icinga2}
+      icingaweb_modules_director_kickstart_config_host: icinga2
+      icingaweb_modules_director_kickstart_config_port: '5665'
+      icingaweb_modules_director_kickstart_config_username: root
+      icingaweb_modules_director_kickstart_config_password: ${ICINGA_ADMIN_PASSWORD:-icinga}
+      icingaweb_modules_fileshipper_imports_Example_basedir: /etc/fileshipper/example
+      icingaweb_modules_fileshipper_imports_Playground_basedir: /etc/fileshipper/playground
+      icingaweb_modules_x509_config_backend_resource: x509
+      icingaweb_resources_director_type: db
+      icingaweb_resources_director_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_director_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_director_dbname: director
+      icingaweb_resources_director_username: director
+      icingaweb_resources_director_password: ${DIRECTOR_DATABASE_PASSWORD:-director}
+      icingaweb_resources_director_charset: utf8
+      icingaweb_resources_x509_type: db
+      icingaweb_resources_x509_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_dbname: x509
+      icingaweb_resources_x509_username: x509
+      icingaweb_resources_x509_password: ${X509_DATABASE_PASSWORD:-x509}
+      icingaweb_resources_x509_charset: utf8
+    volumes:
+      - ${PWD}/fileshipper/example:/etc/fileshipper/example:z
+      - ${PWD}/fileshipper/playground:/etc/fileshipper/playground:z
+      - ${PWD}/scripts:/scripts:ro,z
+    command: [
+      icingacli, director, daemon, run,
+      --kickstart,
+      --import-basket, /scripts/director-basket.json,
+      --run-automation,
+      --deploy
+    ]

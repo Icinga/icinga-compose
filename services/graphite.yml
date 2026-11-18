@@ -1,0 +1,9 @@
+---
+services:
+  graphite:
+    image: graphiteapp/graphite-statsd:${GRAPHITE_TAG:-latest} # E.g.: master, 1.1.10-5
+    volumes:
+      - graphite:/opt/graphite/storage
+
+volumes:
+  graphite:

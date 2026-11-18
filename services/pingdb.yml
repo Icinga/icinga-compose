@@ -1,0 +1,15 @@
+---
+services:
+  pingdb:
+    profiles:
+      - mysql
+      - pgsql
+    image: busybox:1
+    user: nobody
+    environment:
+      DATABASE_TYPE: ${DATABASE_TYPE:-mysql}
+    volumes:
+      - ${PWD}/scripts:/scripts:ro,z
+    command:
+      - sh
+      - /scripts/pingdb.sh

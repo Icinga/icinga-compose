@@ -1,0 +1,31 @@
+---
+services:
+  x509:
+    profiles:
+      - mysql
+      - pgsql
+    depends_on:
+      pingdb:
+        condition: service_completed_successfully
+    image: icinga/icingaweb2:${ICINGAWEB_TAG:-latest}
+    environment:
+      ICINGAWEB_SERIALIZER_COMPAT: 0
+      icingaweb_enabledModules: x509,${ICINGAWEB_ENABLEDMODULES:-}
+      icingaweb_modules_x509_config_backend_resource: x509
+      icingaweb_resources_x509_type: db
+      icingaweb_resources_x509_db: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_host: ${DATABASE_TYPE:-mysql}
+      icingaweb_resources_x509_dbname: x509
+      icingaweb_resources_x509_username: x509
+      icingaweb_resources_x509_password: ${X509_DATABASE_PASSWORD:-x509}
+      icingaweb_resources_x509_charset: utf8
+    volumes:
+      - ${PWD}/scripts:/scripts:ro,z
+    command:
+      - bash
+      - -exo
+      - pipefail
+      - -c
+      - |
+        php /scripts/x509-schema.php
+        exec icingacli x509 jobs run

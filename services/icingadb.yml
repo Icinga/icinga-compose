@@ -1,0 +1,16 @@
+---
+services:
+  icingadb:
+    profiles:
+      - mysql
+      - pgsql
+    image: icinga/icingadb:${ICINGADB_TAG:-latest} # E.g.: 1.4, 1.5.1
+    environment:
+      ICINGADB_REDIS_HOST: icingadb-redis
+      ICINGADB_REDIS_PORT: 6379
+      ICINGADB_REDIS_PASSWORD: ${ICINGADB_REDIS_PASSWORD:-icingadb-redis}
+      ICINGADB_DATABASE_TYPE: ${DATABASE_TYPE:-mysql}
+      ICINGADB_DATABASE_HOST: ${DATABASE_TYPE:-mysql}
+      ICINGADB_DATABASE_DATABASE: icingadb
+      ICINGADB_DATABASE_USER: icingadb
+      ICINGADB_DATABASE_PASSWORD: ${ICINGADB_DATABASE_PASSWORD:-icingadb}

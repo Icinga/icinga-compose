@@ -1,0 +1,18 @@
+---
+services:
+  mysql:
+    profiles:
+      - mysql
+    image: mariadb:${MARIADB_TAG:-latest} # E.g.: 12, lts
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      DIRECTOR_DATABASE_PASSWORD: ${DIRECTOR_DATABASE_PASSWORD:-director}
+      ICINGADB_DATABASE_PASSWORD: ${ICINGADB_DATABASE_PASSWORD:-icingadb}
+      ICINGAWEB_DATABASE_PASSWORD: ${ICINGAWEB_DATABASE_PASSWORD:-icingaweb}
+      X509_DATABASE_PASSWORD: ${X509_DATABASE_PASSWORD:-x509}
+    volumes:
+      - mysql:/var/lib/mysql
+      - ${PWD}/scripts/mysql-init.sh:/docker-entrypoint-initdb.d/databases.sh:ro,z
+
+volumes:
+  mysql:
